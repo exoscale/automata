@@ -12,9 +12,9 @@
   ([machine event]
    (let [transition (transit (::rules machine) (::state machine) event)]
      (if (map? transition)
-       (assoc machine
-              ::state   (::to transition)
-              ::actions (::actions transition))
+       (let [{::keys [actions to]} transition]
+         (-> machine (dissoc ::actions) (assoc ::state to)
+             (cond-> (some? actions) (assoc ::actions actions))))
        transition)))
   ([rules state event]
    (let [transitions (get rules (extract state ::state))

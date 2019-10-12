@@ -46,6 +46,12 @@
                                 state
                                 (::fsm/event transition))))))
 
+(deftest resource-transitions-test
+  (= {::fsm/state :killed}
+     (reduce fsm/transit
+             {::fsm/rules resource-rules ::fsm/state :init}
+             [:create :created :start :started :stop :stopped :kill :killed])))
+
 (comment
   (require '[automata.view :as v])
   (spit "/home/pyr/t/rules.dot" (v/draw-fsm resource-rules))
