@@ -54,6 +54,6 @@
 
 (comment
   (require '[automata.view :as v])
-  (spit "/home/pyr/t/rules.dot" (v/draw-fsm resource-rules))
+  (spit "/home/pyr/t/rules.dot" (println (v/draw-fsm resource-rules)))
 
   )
