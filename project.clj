@@ -1,4 +1,4 @@
-(defproject exoscale/automata "0.1.6-SNAPSHOT"
+(defproject exoscale/automata "0.1.6"
   :description "Data-based moore machines in Clojure"
   :url "https://github.com/exoscale/automata"
   :license {:name "ISC"}
