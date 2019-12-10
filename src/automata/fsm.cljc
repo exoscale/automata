@@ -73,6 +73,7 @@
 
 (s/def ::state       keyword?)
 (s/def ::action      keyword?)
+(s/def ::event       keyword?)
 (s/def ::actions     (s/coll-of ::action))
 (s/def ::transition  (s/keys :req [::event ::to] :opt [::actions]))
 (s/def ::transitions (s/coll-of ::transition))
