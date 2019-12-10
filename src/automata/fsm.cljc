@@ -21,7 +21,7 @@
 
    Both arities throw when no possible transition was found"
   ([{::keys [rules state] :as machine} event]
-   (let [{::keys [actions to] :as transition} (transit rules state event)]
+   (let [{::keys [actions to] :as _transition} (transit rules state event)]
      (-> machine
          (dissoc ::actions)
          (assoc ::state to)
@@ -29,9 +29,10 @@
   ([rules state event]
    (let [transitions (get rules (extract state ::state))
          e           (extract event ::event)]
-     (or (first
-          (for [transition transitions :when (= (::event transition) e)]
-            transition))
+     (or (reduce #(when (identical? (::event %2) e)
+                    (reduced %2))
+                 nil
+                 transitions)
          (throw
           (ex-info "cannot find transition"
                    {:type   :exoscale.ex/not-found
@@ -45,11 +46,13 @@
    a functioning set of rules. Rules are deemed functioning if
    all target states are known."
   [rules]
-  (let [valid-states   (set (keys rules))
-        found-states   (->> (mapcat val rules)
-                            (map ::to)
-                            (set))]
-    (seq (remove #(contains? valid-states %) found-states))))
+  (let [valid-states (set (keys rules))]
+    (-> (into #{}
+              (comp (mapcat (comp ::to val))
+                    (distinct)
+                    (remove #(contains? valid-states %)))
+              rules)
+        not-empty)))
 
 (defn validate-rules
   "Perform sanity checks on a rule set, intended to be ran when loading rules.
@@ -61,7 +64,8 @@
   (when-let [states (invalid-states rules)]
     (throw (ex-info (reduce str "transitions contain invalid states: "
                             (interpose ", " (map name states)))
-                    {:type :exoscale.ex/incorrect})))
+                    {:type :exoscale.ex/incorrect
+                     :states states})))
   rules)
 
 ;; Specs
