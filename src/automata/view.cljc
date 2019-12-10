@@ -4,7 +4,7 @@
 
 (defn identifier
   [x]
-  (str "\"" (name x) "\""))
+  (str \" (name x) \"))
 
 (defn ^:no-doc draw-transition
   "Single transition view builder"
