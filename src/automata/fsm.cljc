@@ -5,7 +5,9 @@
 
 (defn ^:no-doc extract
   [x k]
-  (cond (map? x) (get x k) (keyword? x) x))
+  (cond
+    (map? x) (get x k)
+    (keyword? x) x))
 
 (defn transit
   "Given a set of rules for states, a current state and event,
@@ -71,9 +73,9 @@
 ;; Specs
 ;; =====
 
-(s/def ::state       keyword?)
-(s/def ::action      keyword?)
-(s/def ::event       keyword?)
+(s/def ::state       qualified-keyword?)
+(s/def ::action      qualified-keyword?)
+(s/def ::event       qualified-keyword?)
 (s/def ::actions     (s/coll-of ::action))
 (s/def ::transition  (s/keys :req [::event ::to] :opt [::actions]))
 (s/def ::transitions (s/coll-of ::transition))

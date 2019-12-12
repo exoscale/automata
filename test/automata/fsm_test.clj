@@ -16,24 +16,24 @@
         (= ::foo (fsm/extract {kw ::foo} kw)))))
 
 (def resource-rules
-  {:init     [{::fsm/event :create  ::fsm/to :creating ::fsm/actions [:create]}
-              {::fsm/event :kill    ::fsm/to :killed}]
-   :creating [{::fsm/event :created ::fsm/to :down}
-              {::fsm/event :error   ::fsm/to :init}]
-   :down     [{::fsm/event :start   ::fsm/to :starting ::fsm/actions [:start]}
-              {::fsm/event :kill    ::fsm/to :killing  ::fsm/actions [:kill]}]
-   :starting [{::fsm/event :started ::fsm/to :up}
-              {::fsm/event :error   ::fsm/to :down}]
-   :stopping [{::fsm/event :stopped ::fsm/to :down}
-              {::fsm/event :error   ::fsm/to :up}]
-   :up       [{::fsm/event :stop    ::fsm/to :stopping ::fsm/actions [:stop]}
-              {::fsm/event :kill    ::fsm/to :killing  ::fsm/actions [:kill]}]
-   :killing  [{::fsm/event :killed  ::fsm/to :killed}
-              {::fsm/event :error   ::fsm/to :killing}]
-   :killed   []})
+  {:state/init     [{::fsm/event :event/create  ::fsm/to :state/creating ::fsm/actions [:action/create]}
+                    {::fsm/event :event/kill    ::fsm/to :state/killed}]
+   :state/creating [{::fsm/event :event/created ::fsm/to :state/down}
+                    {::fsm/event :event/error   ::fsm/to :state/init}]
+   :state/down     [{::fsm/event :event/start   ::fsm/to :state/starting ::fsm/actions [:action/start]}
+                    {::fsm/event :event/kill    ::fsm/to :state/killing  ::fsm/actions [:action/kill]}]
+   :state/starting [{::fsm/event :event/started ::fsm/to :state/up}
+                    {::fsm/event :event/error   ::fsm/to :state/down}]
+   :state/stopping [{::fsm/event :event/stopped ::fsm/to :state/down}
+                    {::fsm/event :event/error   ::fsm/to :state/up}]
+   :state/up       [{::fsm/event :event/stop    ::fsm/to :state/stopping ::fsm/actions [:action/stop]}
+                    {::fsm/event :event/kill    ::fsm/to :state/killing  ::fsm/actions [:action/kill]}]
+   :state/killing  [{::fsm/event :event/killed  ::fsm/to :state/killed}
+                    {::fsm/event :event/error   ::fsm/to :state/killing}]
+   :state/killed   []})
 
 (def generator
-  (gen/let [[state transitions] (gen/elements (dissoc resource-rules :killed))
+  (gen/let [[state transitions] (gen/elements (dissoc resource-rules :state/killed))
             transition          (gen/elements transitions)]
     [state transition]))
 
@@ -49,8 +49,9 @@
 (deftest resource-transitions-test
   (= {::fsm/state :killed}
      (reduce fsm/transit
-             {::fsm/rules resource-rules ::fsm/state :init}
-             [:create :created :start :started :stop :stopped :kill :killed])))
+             {::fsm/rules resource-rules ::fsm/state :state/init}
+             [:event/create :event/created :event/start :event/started
+              :event/stop :event/stopped :event/kill :event/killed])))
 
 (comment
   (require '[automata.view :as v])
