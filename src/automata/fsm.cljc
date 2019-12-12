@@ -21,7 +21,7 @@
 
    Both arities throw when no possible transition was found"
   ([{::keys [rules state] :as machine} event]
-   (let [{::keys [actions to] :as _transition} (transit rules state event)]
+   (let [{::keys [actions to]} (transit rules state event)]
      (-> machine
          (dissoc ::actions)
          (assoc ::state to)
