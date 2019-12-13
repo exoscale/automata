@@ -2,20 +2,10 @@
 
 [![Build Status](https://secure.travis-ci.org/exoscale/automata.png)](http://travis-ci.org/exoscale/automata)
 
-```clojure
-[[exoscale/automata "0.1.0"]]
-```
+[![Clojars Project](https://img.shields.io/clojars/v/exoscale/automata.svg)](https://clojars.org/exoscale/automata)
+
+[![cljdoc badge](https://cljdoc.org/badge/exoscale/automata)](https://cljdoc.org/d/exoscale/automata/CURRENT)
 
 Automata provides a way to encode [Moore
 machine](https://en.wikipedia.org/wiki/Moore_machine) type finite
 state transducers.
-
-No assumption is done on 
-
-
-
-
-
-
-
-
