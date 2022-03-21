@@ -47,14 +47,20 @@
                                 (::fsm/event transition))))))
 
 (deftest resource-transitions-test
-  (= {::fsm/state :killed}
-     (reduce fsm/transit
-             {::fsm/rules resource-rules ::fsm/state :state/init}
-             [:event/create :event/created :event/start :event/started
-              :event/stop :event/stopped :event/kill :event/killed])))
+  (is (= :state/killed
+         (-> (reduce fsm/transit
+                     {::fsm/rules resource-rules ::fsm/state :state/init}
+                     [:event/create :event/created :event/start :event/started
+                      :event/stop :event/stopped :event/kill :event/killed])
+             ::fsm/state))))
+
+(deftest invalid-states-test
+  (is (= #{:state/foobar}
+         (fsm/invalid-states (assoc-in resource-rules
+                                       [:state/init 0 ::fsm/to] :state/foobar)))))
 
 (comment
   (require '[automata.view :as v])
-  (spit "/home/pyr/t/rules.dot" (println (v/draw-fsm resource-rules)))
+  (spit "/home/pyr/t/rules.dot" (v/draw-fsm resource-rules))
 
   )

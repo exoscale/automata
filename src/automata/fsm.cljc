@@ -50,9 +50,10 @@
   [rules]
   (let [valid-states (set (keys rules))]
     (-> (into #{}
-              (comp (mapcat (comp ::to val))
+              (comp (mapcat val)
+                    (map ::to)
                     (distinct)
-                    (remove #(contains? valid-states %)))
+                    (remove (partial contains? valid-states)))
               rules)
         not-empty)))
 
