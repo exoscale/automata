@@ -1,6 +1,7 @@
 (ns automata.fsm
   "Finite state transducer library. Intended for data representations of
    state transitions, leaving actions to consumers of the library."
+  (:refer-clojure :exclude [next])
   (:require [clojure.spec.alpha :as s]))
 
 (defn ^:no-doc extract
@@ -82,3 +83,48 @@
 (s/def ::transitions (s/coll-of ::transition))
 (s/def ::rules       (s/map-of ::state ::transitions))
 (s/def ::machine     (s/keys :req [::rules ::state] :opt [::actions]))
+
+;; Helpers
+;; =======
+
+(defn ruleset
+  "A helper to define a ruleset"
+  [& rules]
+  (into {} rules))
+
+(defn with-state
+  "Within the context of a ruleset definition, define transitions from
+  a particular state"
+  [state & transitions]
+  [state transitions])
+
+(defn upon
+  "Within the context of a state transition definition, add an event
+  transition definition."
+  [event new-state & [actions]]
+  {::event event ::to new-state ::actions actions})
+
+(defn transit-to
+  "Define the target state for a state transition"
+  [x]
+  x)
+
+(defn and-execute
+  "Define effects for a state transition"
+  [& effects]
+  (into [] effects))
+
+(def ^{:doc "Yields the next state for a transition"
+       :arglists '([transition])}
+  next
+  ::to)
+
+(def ^{:doc "Yields all actions for a transition"
+       :arglists '([transition])}
+  actions
+  ::actions)
+
+(def ^{:doc "Yields the first action for a transition"
+       :arglists '([transition])}
+  action
+  (comp first actions))
