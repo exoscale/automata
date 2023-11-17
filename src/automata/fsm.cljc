@@ -32,7 +32,7 @@
   ([rules state event]
    (let [transitions (get rules (extract state ::state))
          e           (extract event ::event)]
-     (or (reduce #(when (identical? (::event %2) e)
+     (or (reduce #(when (= (::event %2) e)
                     (reduced %2))
                  nil
                  transitions)
